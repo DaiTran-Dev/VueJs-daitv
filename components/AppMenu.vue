@@ -3,20 +3,26 @@
     <!-- Links -->
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="#">List</a>
+        <NuxtLink to="/blogList/" class="nav-link">List</NuxtLink>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">New</a>
+        <NuxtLink to="/blogList/create" class="nav-link">New</NuxtLink>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Search</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Edit</a>
+        <NuxtLink to="/blogList/search" class="nav-link">Search</NuxtLink>
       </li>
     </ul>
   </nav>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      status: true,
+    };
+  },
+};
+</script>
 <style scoped>
 #menu {
   border: 1px solid #e8e6e6;
@@ -27,7 +33,10 @@
   color: #000;
   text-align: center;
 }
+a.nuxt-link-active {
+  font-weight: bold;
+}
+a.nuxt-link-exact-active {
+  color: #00c58e;
+}
 </style>
-<script>
-export default {};
-</script>

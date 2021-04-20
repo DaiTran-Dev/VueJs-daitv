@@ -1,12 +1,11 @@
 <template>
   <AppPage></AppPage>
 </template>
+
 <script>
-import AppPage from "../components/AppPage";
+import AppPage from "../components/AppPage.vue";
+
 export default {
-  data() {
-    return {};
-  },
   components: {
     AppPage,
   },
