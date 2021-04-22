@@ -20,9 +20,9 @@
             <tr v-for="item in posts" :key="item.id">
               <th scope="row">{{ item.id }}</th>
               <td>{{ item.title }}</td>
-              <td>{{ item.category }}</td>
-              <td>{{ convertBoolean(item.public) }}</td>
-              <td>{{ convertLocation(item.position) }}</td>
+              <td>{{ convertCategory(item.category) }}</td>
+              <td>{{ convertStatus(item.public) }}</td>
+              <td>{{ convertPosition(item.position) }}</td>
               <td>{{ item.data_pubblic }}</td>
               <td>
                 <NuxtLink :to="linkEdit(item.id)" class="nav-link"
@@ -30,9 +30,13 @@
                 >
               </td>
               <td>
-                <NuxtLink :to="linkDelete(item.id)" class="nav-link"
-                  >Delete</NuxtLink
+                <button
+                  type="button"
+                  class="btn-delete"
+                  @click="deleteBlog(item.id)"
                 >
+                  Delete
+                </button>
               </td>
             </tr>
           </tbody>
@@ -44,44 +48,85 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      categories: [
+        { id: 0, name: "Tin Vắn" },
+        { id: 1, name: "Thời sự" },
+      ],
+      position: [
+        { id: 0, name: "Việt Nam" },
+        { id: 1, name: "Châu Á" },
+        { id: 2, name: "Châu Âu" },
+        { id: 3, name: "Châu Mỹ" },
+      ],
+    };
   },
   props: ["posts"],
   methods: {
-    convertBoolean(value) {
-      if (value) {
+    convertStatus(status) {
+      if (status) {
         return "Hiện";
       }
       return "Ẩn";
     },
-    convertLocation(value) {
-      var location = "";
-      for (let index = 0; index < value.length; index++) {
-        const element = value[index];
-        if (element == 1) {
-          location += " Việt Nam";
-        } else if (element == 2) {
-          location += " Châu Á";
-        } else if (element == 3) {
-          location += " Châu Âu";
-        } else if (element == 4) {
-          location += " Châu Mỹ";
+    convertPosition(position) {
+      position = new Array(position);
+      if(position.length==0){
+        return;
+      }
+      position= position[0];
+      var positionName = "";
+      for (let index = 0; index < this.position.length; index++) {
+        let element = this.position[index];
+        if(position.find(x=>x==element.id)){
+          positionName+=element.name+",";
         }
       }
-      return location;
+      return positionName;
     },
-    convertCate(value) {
-      if (value == 1) {
-        return "Thời Sự";
+    convertCategory(categoryId) {
+      var category = this.categories.find(x=>x.id == categoryId);
+      if(category){
+        return category.name;
       }
-      return "Tin Tức";
+      return "";
     },
-    linkEdit(value) {
-      return "/blogList/" + value;
+    linkEdit(id) {
+      return "/blog/" + id;
     },
-    linkDelete(value) {
-      return "delele";
+    async getAllBlog() {
+      const response = await this.$axios.$get("http://localhost:3000/blogs");
+      this.posts = response;
+    },
+    async deleteBlog(id) {
+      var url = "http://localhost:3000/blogs/" + id;
+      await this.$axios.$delete(url).then((response) => {
+        this.getAllBlog();
+      });
     },
   },
 };
 </script>
+<style>
+#dataTable {
+  padding: 0;
+  border: none;
+}
+#dataTable .card-header {
+  padding-left: 0;
+  background: none;
+  border: none;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+#dataTable .card-body {
+  padding: 0;
+}
+.btn-delete {
+  padding: 2px;
+  display: inline-block;
+  border: 1px solid red;
+  color: red;
+  border-radius: 10%;
+}
+</style>

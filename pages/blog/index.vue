@@ -14,14 +14,13 @@ export default {
     blogListTable,
   },
   methods: {
-    async fetchSomething() {
+    async getAllBlog() {
       const response = await this.$axios.$get("http://localhost:3000/blogs");
       this.posts = response;
     },
   },
   mounted(){
-    this.fetchSomething();
-    console.log(this.edit)
+    this.getAllBlog();
   }
 };
 </script>

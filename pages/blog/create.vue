@@ -1,5 +1,9 @@
 <template>
-  <blogEdit :title="title" :post="post" :edit="edit"></blogEdit>
+  <blogEdit
+    :title="title"
+    :post="post"
+    :edit="edit"
+  ></blogEdit>
 </template>
 <script>
 import blogEdit from "../../components/Blog/BlogEdit.vue";
@@ -17,7 +21,7 @@ export default {
         public: true,
         data_pubblic: "",
       },
-      edit:false,
+      edit: false,
     };
   },
   components: {

@@ -1,8 +1,8 @@
 <template>
-  <div class="card">
-    <div class="card-header">{{ title }} {{ edit }}</div>
+  <div class="card" id="f-edit-create">
+    <div class="card-header">{{ title }}</div>
     <div class="card-body">
-      <form>
+      <form id="form-main">
         <div class="form-group">
           <label for="exampleInputEmail1">Tiêu đề</label>
           <input
@@ -31,90 +31,78 @@
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Hình ảnh</label>
-          <br />
-          <input type="file" />
-          <br />
-          <img :src="image" alt="" />
-          <br />
+          <div>
+            <input type="file" class="mb-1" />
+          </div>
+          <img :src="image" alt="" v-if="edit" />
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Loại</label>
-          <br />
-          <select v-model="post.category">
-            <option disabled value="">Please select one</option>
-            <option value="0">Tin Vắn</option>
-            <option value="1">Thời Sự</option>
-          </select>
+          <div>
+            <select v-model="post.category">
+              <option value="" disabled>Chọn loại</option>
+              <option
+                v-for="item in categories"
+                :key="item.id"
+                :value="item.id"
+              >
+                {{ item.name }}
+              </option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Vị trí</label>
-          <br />
-          <input
-            type="checkbox"
-            v-model="post.position"
-            name="position"
-            value="0"
-          />
-          <label for="jack">VietNam</label>
-          <br />
-          <input
-            type="checkbox"
-            v-model="post.position"
-            name="position"
-            value="1"
-          />
-          <label for="john">Châu Á</label>
-          <br />
-          <input
-            type="checkbox"
-            v-model="post.position"
-            name="position"
-            value="2"
-          />
-          <label for="mike">Châu Âu</label>
-          <br />
-          <input
-            type="checkbox"
-            v-model="post.position"
-            name="position"
-            value="3"
-          />
-          <label for="mike">Châu Mỹ</label>
-          <br />
+          <div v-for="item in position" :key="item.id">
+            <input
+              type="checkbox"
+              v-model="post.position"
+              name="position"
+              :value="item.id"
+            />
+            <label for="jack">{{ item.name }}</label>
+          </div>
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Public</label>
-          <br />
-          <input
-            type="radio"
-            name="public"
-            value="true"
-            v-model="post.public"
-          />
-          Yes
-          <br />
-          <input
-            type="radio"
-            name="public"
-            value="false"
-            v-model="post.public"
-          />
-          No
+          <div>
+            <input
+              type="radio"
+              name="public"
+              value="true"
+              v-model="post.public"
+            />
+            Yes
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="public"
+              value="false"
+              v-model="post.public"
+            />
+            No
+          </div>
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Date Public</label>
-          <br />
-          <input type="date" name="" v-model="post.data_pubblic" />
+          <div>
+            <input type="date" name="" v-model="post.data_pubblic" />
+          </div>
         </div>
-        <div class="form-group d-flex">
-          <button
-            type="button"
-            class="btn btn-primary mr-5"
-            @click="submitData"
-          >
-            Submit
-          </button>
-          <button type="button" class="btn btn-primary">Clear</button>
+        <div class="form-group d-flex justify-content-end mt-5">
+          <div class="w-75">
+            <button
+              type="button"
+              class="btn btn-primary mr-3 btn-submit"
+              @click="submitData"
+            >
+              Submit
+            </button>
+            <button type="button" class="btn btn-primary" @click="clearForm()">
+              Clear
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -125,6 +113,16 @@ export default {
   data() {
     return {
       image: "",
+      categories: [
+        { id: 0, name: "Tin Vắn" },
+        { id: 1, name: "Thời sự" },
+      ],
+      position: [
+        { id: 0, name: "Việt Nam" },
+        { id: 1, name: "Châu Á" },
+        { id: 2, name: "Châu Âu" },
+        { id: 3, name: "Châu Mỹ" },
+      ],
     };
   },
   props: ["post", "title", "edit"],
@@ -132,36 +130,48 @@ export default {
     removeImage: function () {
       this.image = "";
     },
-    async updateBlog(data) {
+    async updateBlog(post) {
       var url = "http://localhost:3000/blogs/" + this.post.id;
-      const response = await this.$axios.$put(url, data);
+      const response = await this.$axios.$put(url, post);
     },
-    async createBlog(data) {
+    async createBlog(post) {
       var url = "http://localhost:3000/blogs/";
-      const response = await this.$axios.$post(url, data);
+      const response = await this.$axios.$post(url, post);
     },
     submitData: function () {
       var positions = new Array(this.post.position);
-      var positionData = positionsF[0].map(function (value) {
-        return parseInt(value);
+      positions = positions[0].map(function (item) {
+        return parseInt(item);
       });
-      var data = {
+      var post = {
         title: this.post.title,
         des: this.post.des,
         detail: this.post.detail,
         image: this.post.image,
         category: this.post.category,
-        position: positionData,
+        position: positions,
         public: this.post.public,
         data_pubblic: this.post.data_pubblic,
       };
       if (this.edit) {
-        this.updateBlog(data);
+        this.updateBlog(post);
       } else {
-        data.id = Math.floor(Math.random() * (10000 - 77)) + 77;
-        data.image = "https://picsum.photos/200/300";
-        this.createBlog(data);
+        post.id = Math.floor(Math.random() * (10000 - 77)) + 77;
+        post.image = "https://picsum.photos/200/300";
+        this.createBlog(post);
       }
+    },
+    clearForm() {
+      this.post = {
+        title: "",
+        des: "",
+        detail: "",
+        image: "",
+        category: "",
+        position: [],
+        public: true,
+        data_pubblic: "",
+      };
     },
   },
   updated() {
@@ -169,3 +179,19 @@ export default {
   },
 };
 </script>
+<style>
+#f-edit-create {
+  padding: 0;
+  border: none;
+}
+#f-edit-create .card-header {
+  padding-left: 0;
+  background: none;
+  border: none;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+.btn-submit {
+  background: #2ba847;
+}
+</style>
