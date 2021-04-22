@@ -42,7 +42,7 @@
             <select v-model="post.category">
               <option value="" disabled>Chọn loại</option>
               <option
-                v-for="item in categories"
+                v-for="item in constantSystem.CATEGORIES"
                 :key="item.id"
                 :value="item.id"
               >
@@ -53,7 +53,7 @@
         </div>
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Vị trí</label>
-          <div v-for="item in position" :key="item.id">
+          <div v-for="item in constantSystem.POSITIONS" :key="item.id">
             <input
               type="checkbox"
               v-model="post.position"
@@ -109,20 +109,12 @@
   </div>
 </template>
 <script>
+import constantSystem from "../../constant/constantSystem.vue";
 export default {
   data() {
     return {
       image: "",
-      categories: [
-        { id: 0, name: "Tin Vắn" },
-        { id: 1, name: "Thời sự" },
-      ],
-      position: [
-        { id: 0, name: "Việt Nam" },
-        { id: 1, name: "Châu Á" },
-        { id: 2, name: "Châu Âu" },
-        { id: 3, name: "Châu Mỹ" },
-      ],
+      constantSystem: constantSystem,
     };
   },
   props: ["post", "title", "edit"],
@@ -131,12 +123,14 @@ export default {
       this.image = "";
     },
     async updateBlog(post) {
-      var url = "http://localhost:3000/blogs/" + this.post.id;
+      var url = this.constantSystem.BASE_API + this.post.id;
       const response = await this.$axios.$put(url, post);
     },
     async createBlog(post) {
-      var url = "http://localhost:3000/blogs/";
-      const response = await this.$axios.$post(url, post);
+      const response = await this.$axios.$post(
+        this.constantSystem.BASE_API,
+        post
+      );
     },
     submitData: function () {
       var positions = new Array(this.post.position);

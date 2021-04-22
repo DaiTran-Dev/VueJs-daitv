@@ -46,19 +46,11 @@
   </div>
 </template>
 <script>
+import constantSystem from "../../constant/constantSystem.vue";
 export default {
   data() {
     return {
-      categories: [
-        { id: 0, name: "Tin Vắn" },
-        { id: 1, name: "Thời sự" },
-      ],
-      position: [
-        { id: 0, name: "Việt Nam" },
-        { id: 1, name: "Châu Á" },
-        { id: 2, name: "Châu Âu" },
-        { id: 3, name: "Châu Mỹ" },
-      ],
+      constantSystem: constantSystem,
     };
   },
   props: ["posts"],
@@ -71,22 +63,28 @@ export default {
     },
     convertPosition(position) {
       position = new Array(position);
-      if(position.length==0){
+      if (position.length == 0) {
         return;
       }
-      position= position[0];
+      position = position[0];
       var positionName = "";
-      for (let index = 0; index < this.position.length; index++) {
-        let element = this.position[index];
-        if(position.find(x=>x==element.id)){
-          positionName+=element.name+",";
+      for (
+        let index = 0;
+        index < this.constantSystem.POSITIONS.length;
+        index++
+      ) {
+        let element = this.constantSystem.POSITIONS[index];
+        if (position.find((x) => x == element.id)) {
+          positionName += element.name + ",";
         }
       }
       return positionName;
     },
     convertCategory(categoryId) {
-      var category = this.categories.find(x=>x.id == categoryId);
-      if(category){
+      var category = this.constantSystem.CATEGORIES.find(
+        (x) => x.id == categoryId
+      );
+      if (category) {
         return category.name;
       }
       return "";
@@ -95,11 +93,11 @@ export default {
       return "/blog/" + id;
     },
     async getAllBlog() {
-      const response = await this.$axios.$get("http://localhost:3000/blogs");
+      const response = await this.$axios.$get(this.constantSystem.BASE_API);
       this.posts = response;
     },
     async deleteBlog(id) {
-      var url = "http://localhost:3000/blogs/" + id;
+      var url = this.constantSystem.BASE_API + id;
       await this.$axios.$delete(url).then((response) => {
         this.getAllBlog();
       });
